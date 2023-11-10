@@ -1,0 +1,23 @@
+{
+  "name": "backendusingnodejs",
+  "version": "1.0.0",
+  "description": "Backend learning using nodejs - production ready (hitesh chaudhary sir)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "backend"
+  ],
+  "author": "aniket tiwari",
+  "license": "ISC",
+  "devDependencies": {
+    "mongoose": "^8.0.0",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3"
+  }
+}
