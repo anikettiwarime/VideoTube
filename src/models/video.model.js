@@ -1,29 +1,29 @@
-import { Schema, model } from "mongoose";
-import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+import { Schema, model } from 'mongoose';
+import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 const videoSchema = new Schema(
     {
         title: {
             type: String,
-            required: [true, "Title is required"],
+            required: [true, 'Title is required'],
             trim: true,
         },
         description: {
             type: String,
-            required: [true, "Description is required"],
+            required: [true, 'Description is required'],
             trim: true,
         },
         thumbnail: {
             type: String, // URL
-            required: [true, "Thumbnail is required"],
+            required: [true, 'Thumbnail is required'],
         },
         videoUrl: {
             type: String, // URL
-            required: [true, "Video URL is required"],
+            required: [true, 'Video URL is required'],
         },
         duration: {
             type: Number,
-            required: [true, "Duration is required"],
+            required: [true, 'Duration is required'],
         },
         viewCount: {
             type: Number,
@@ -33,7 +33,7 @@ const videoSchema = new Schema(
         // Relationship
         owner: {
             type: Schema.Types.ObjectId,
-            ref: "User",
+            ref: 'User',
         },
     },
     {
@@ -42,4 +42,4 @@ const videoSchema = new Schema(
 );
 
 videoSchema.plugin(mongooseAggregatePaginate);
-export const Video = model("Video", videoSchema);
+export const Video = model('Video', videoSchema);
