@@ -1,14 +1,13 @@
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { Video } from '../models/video.model.js';
-import { ApiResponse } from '../utils/ApiResponse.js';
-import { uploadFileOnCloudinary } from '../utils/cloudinary.js';
-import { FOLDER } from '../constants.js';
-import { ApiError } from '../utils/ApiError.js';
-import { getVideoDurationInSeconds } from 'get-video-duration';
-
+import {asyncHandler} from '../utils/asyncHandler.js';
+import {Video} from '../models/video.model.js';
+import {ApiResponse} from '../utils/ApiResponse.js';
+import {uploadFileOnCloudinary} from '../utils/cloudinary.js';
+import {FOLDER} from '../constants.js';
+import {ApiError} from '../utils/ApiError.js';
+import {getVideoDurationInSeconds} from 'get-video-duration';
 
 const publishVideo = asyncHandler(async (req, res) => {
-    const { title, description } = req.body;
+    const {title, description} = req.body;
 
     const videoFileLocalPath = req.files?.videoFile[0].path;
     const thumbnailLocalPath = req.files?.thumbnail[0].path;
@@ -54,4 +53,4 @@ const publishVideo = asyncHandler(async (req, res) => {
         .json(new ApiResponse(201, video, 'Video published successfully'));
 });
 
-export { publishVideo };
+export {publishVideo};
