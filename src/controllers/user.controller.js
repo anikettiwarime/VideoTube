@@ -5,6 +5,7 @@ import {User} from '../models/user.model.js';
 import {uploadFileOnCloudinary} from '../utils/cloudinary.js';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import {FOLDER} from '../constants.js';
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -66,8 +67,11 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // upload avatar to cloudinary
-    const avatar = await uploadFileOnCloudinary(avatarLocalPath);
-    const coverImage = await uploadFileOnCloudinary(coverImageLocalPath);
+    const avatar = await uploadFileOnCloudinary(avatarLocalPath, FOLDER.USERS);
+    const coverImage = await uploadFileOnCloudinary(
+        coverImageLocalPath,
+        FOLDER.USERS
+    );
 
     if (!avatar) {
         throw new ApiError(400, 'Error while uploading avatar');
@@ -296,7 +300,7 @@ const updateUserAvatarImage = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Avatar is required');
     }
 
-    const avatar = await uploadFileOnCloudinary(avatarLocalPath);
+    const avatar = await uploadFileOnCloudinary(avatarLocalPath, FOLDER.USERS);
 
     if (!avatar) {
         throw new ApiError(400, 'Error while uploading avatar');
@@ -324,7 +328,10 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Cover image is required');
     }
 
-    const coverImage = await uploadFileOnCloudinary(coverImageLocalPath);
+    const coverImage = await uploadFileOnCloudinary(
+        coverImageLocalPath,
+        FOLDER.USERS
+    );
 
     if (!coverImage) {
         throw new ApiError(400, 'Error while uploading cover image');
