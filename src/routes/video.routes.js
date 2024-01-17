@@ -3,7 +3,11 @@ const router = Router();
 
 import {verifyJWT} from '../middlewares/auth.middleware.js';
 import {upload} from '../middlewares/multer.middleware.js';
-import {getVideoById, publishVideo} from '../controllers/video.controller.js';
+import {
+    getVideoById,
+    publishVideo,
+    togglePublishStatus,
+} from '../controllers/video.controller.js';
 
 router.use(verifyJWT);
 
@@ -22,5 +26,6 @@ router.route('/').post(
 );
 
 router.route('/:videoId').get(getVideoById);
+router.route('/toggle/publish/:videoId').patch(togglePublishStatus);
 
 export default router;

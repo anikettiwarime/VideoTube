@@ -29,6 +29,10 @@ const videoSchema = new Schema(
             type: Number,
             default: 0,
         },
+        isPublished: {
+            type: Boolean,
+            default: false,
+        },
 
         // Relationship
         owner: {

@@ -89,6 +89,7 @@ const getVideoById = asyncHandler(async (req, res) => {
                 videoUrl: 1,
                 duration: 1,
                 createdAt: 1,
+                isPublished: 1,
                 channel: {
                     _id: 1,
                     username: 1,
@@ -105,4 +106,30 @@ const getVideoById = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, video, 'Video found'));
 });
 
-export {publishVideo, getVideoById};
+const togglePublishStatus = asyncHandler(async (req, res) => {
+    const {videoId} = req.params;
+
+    if (!videoId) {
+        throw new ApiError(400, 'Video id is required');
+    }
+
+    const video = await Video.findById(videoId);
+    if (!video) {
+        throw new ApiError(404, 'Video not found');
+    }
+
+    video.isPublished = !video.isPublished;
+    await video.save();
+
+    let message = '';
+
+    if (video?.isPublished) {
+        message = 'Video published successfully';
+    } else {
+        message = 'Video unpublished successfully';
+    }
+
+    return res.status(200).json(new ApiResponse(200, video, message));
+});
+
+export {publishVideo, getVideoById, togglePublishStatus};
