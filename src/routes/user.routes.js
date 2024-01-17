@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import {Router} from 'express';
 const router = Router();
 
 import {
@@ -14,8 +14,8 @@ import {
     getUserChannelProfile,
     getWatchHistory,
 } from '../controllers/user.controller.js';
-import { upload } from '../middlewares/multer.middleware.js';
-import { verifyJWT } from '../middlewares/auth.middleware.js';
+import {upload} from '../middlewares/multer.middleware.js';
+import {verifyJWT} from '../middlewares/auth.middleware.js';
 
 router.route('/register').post(
     upload.fields([
