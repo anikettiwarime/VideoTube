@@ -3,7 +3,7 @@ const router = Router();
 
 import {verifyJWT} from '../middlewares/auth.middleware.js';
 import {upload} from '../middlewares/multer.middleware.js';
-import {publishVideo} from '../controllers/video.controller.js';
+import {getVideoById, publishVideo} from '../controllers/video.controller.js';
 
 router.use(verifyJWT);
 
@@ -20,5 +20,7 @@ router.route('/').post(
     ]),
     publishVideo
 );
+
+router.route('/:videoId').get(getVideoById);
 
 export default router;
