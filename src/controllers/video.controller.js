@@ -136,7 +136,15 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 });
 
 const getAllVideos = asyncHandler(async (req, res) => {
-    const {page = 1, limit = 10, query, sortBy, sortType, userId} = req.query;
+    const {
+        page = 1,
+        limit = 10,
+        query,
+        sortBy,
+        sortType,
+        userId,
+        published,
+    } = req.query;
 
     const options = {
         page: parseInt(page),
@@ -180,9 +188,11 @@ const getAllVideos = asyncHandler(async (req, res) => {
         as: 'channel',
     });
 
-    aggregate.match({
-        isPublished: true,
-    });
+    if (published) {
+        aggregate.match({
+            isPublished: true,
+        });
+    }
 
     aggregate.project({
         _id: 1,
@@ -264,10 +274,44 @@ const updateVideo = asyncHandler(async (req, res) => {
         );
 });
 
+const deleteVideo = asyncHandler(async (req, res) => {
+    const {videoId} = req.params;
+
+    if (!videoId) {
+        throw new ApiError(400, 'Video id is required');
+    }
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+        throw new ApiError(404, 'Video not found');
+    }
+
+    if (req.user._id.toString() !== video.owner.toString()) {
+        throw new ApiError(403, 'You are not authorized to delete this video');
+    }
+
+    await deleteFileFromCloudinary(FOLDER.THUMBNAIL, video.thumbnail);
+    await deleteFileFromCloudinary(FOLDER.VIDEOS, video.videoUrl);
+
+    await Video.deleteOne({_id: videoId});
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                null,
+                `Video deleted successfully with id ${videoId}`
+            )
+        );
+});
+
 export {
     publishVideo,
     getVideoById,
     togglePublishStatus,
     getAllVideos,
     updateVideo,
+    deleteVideo,
 };
