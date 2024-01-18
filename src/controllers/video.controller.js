@@ -1,7 +1,10 @@
 import {asyncHandler} from '../utils/asyncHandler.js';
 import {Video} from '../models/video.model.js';
 import {ApiResponse} from '../utils/ApiResponse.js';
-import {uploadFileOnCloudinary} from '../utils/cloudinary.js';
+import {
+    uploadFileOnCloudinary,
+    deleteFileFromCloudinary,
+} from '../utils/cloudinary.js';
 import {FOLDER} from '../constants.js';
 import {ApiError} from '../utils/ApiError.js';
 import {getVideoDurationInSeconds} from 'get-video-duration';
@@ -209,4 +212,62 @@ const getAllVideos = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, video, 'Videos found'));
 });
 
-export {publishVideo, getVideoById, togglePublishStatus, getAllVideos};
+const updateVideo = asyncHandler(async (req, res) => {
+    const {videoId} = req.params;
+
+    if (!videoId) {
+        throw new ApiError(400, 'Video id is required');
+    }
+
+    const {title, description} = req.body;
+    const thumbnailLocalPath = req.file?.path;
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+        throw new ApiError(404, 'Video not found');
+    }
+
+    if (thumbnailLocalPath) {
+        await deleteFileFromCloudinary(FOLDER.THUMBNAIL, video.thumbnail);
+
+        const thumbnail = await uploadFileOnCloudinary(
+            thumbnailLocalPath,
+            FOLDER.THUMBNAIL
+        );
+
+        if (!thumbnail) {
+            throw new ApiError(500, 'Error while uploading thumbnail file');
+        }
+
+        video.thumbnail = thumbnail.url;
+    }
+
+    if (title) {
+        video.title = title;
+    }
+
+    if (description) {
+        video.description = description;
+    }
+
+    await video.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                video,
+                `Video updated successfully with id ${videoId}`
+            )
+        );
+});
+
+export {
+    publishVideo,
+    getVideoById,
+    togglePublishStatus,
+    getAllVideos,
+    updateVideo,
+};
