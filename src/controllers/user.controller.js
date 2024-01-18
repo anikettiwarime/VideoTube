@@ -2,7 +2,10 @@ import {asyncHandler} from '../utils/asyncHandler.js';
 import {ApiError} from '../utils/ApiError.js';
 import {ApiResponse} from '../utils/ApiResponse.js';
 import {User} from '../models/user.model.js';
-import {uploadFileOnCloudinary} from '../utils/cloudinary.js';
+import {
+    uploadFileOnCloudinary,
+    deleteFileFromCloudinary,
+} from '../utils/cloudinary.js';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import {FOLDER} from '../constants.js';
@@ -306,6 +309,10 @@ const updateUserAvatarImage = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Error while uploading avatar');
     }
 
+    if (req.user.avatar) {
+        await deleteFileFromCloudinary(FOLDER.USERS, req.user.avatar);
+    }
+
     const user = await User.findByIdAndUpdate(
         req.user._id,
         {
@@ -335,6 +342,10 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
     if (!coverImage) {
         throw new ApiError(400, 'Error while uploading cover image');
+    }
+
+    if (req.user.coverImage) {
+        await deleteFileFromCloudinary(FOLDER.USERS, req.user.coverImage);
     }
 
     const user = await User.findByIdAndUpdate(
