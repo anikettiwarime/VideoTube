@@ -132,4 +132,81 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, video, message));
 });
 
-export {publishVideo, getVideoById, togglePublishStatus};
+const getAllVideos = asyncHandler(async (req, res) => {
+    const {page = 1, limit = 10, query, sortBy, sortType, userId} = req.query;
+
+    const options = {
+        page: parseInt(page),
+        limit: parseInt(limit),
+    };
+
+    const aggregate = Video.aggregate();
+
+    if (query) {
+        aggregate.match({
+            title: {
+                $regex: query,
+                $options: 'i',
+            },
+        });
+    }
+
+    if (sortBy && sortType) {
+        const sortOrder = sortType === 'desc' ? -1 : 1;
+        aggregate.sort({[sortBy]: sortOrder});
+    }
+
+    if (userId) {
+        aggregate.match({
+            owner: new mongoose.Types.ObjectId(userId),
+        });
+        aggregate
+            .lookup({
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                as: 'channel',
+            })
+            .unwind('channel');
+    }
+
+    aggregate.lookup({
+        from: 'users',
+        localField: 'owner',
+        foreignField: '_id',
+        as: 'channel',
+    });
+
+    aggregate.match({
+        isPublished: true,
+    });
+
+    aggregate.project({
+        _id: 1,
+        title: 1,
+        description: 1,
+        thumbnail: 1,
+        videoUrl: 1,
+        duration: 1,
+        createdAt: 1,
+        isPublished: 1,
+        channel: {
+            _id: 1,
+            username: 1,
+            avatar: 1,
+            coverImage: 1,
+        },
+    });
+
+    const video = await Video.aggregatePaginate(aggregate, {
+        ...options,
+        customLabels: {
+            docs: 'videos',
+            totalDocs: 'total videos',
+        },
+    });
+
+    return res.status(200).json(new ApiResponse(200, video, 'Videos found'));
+});
+
+export {publishVideo, getVideoById, togglePublishStatus, getAllVideos};
