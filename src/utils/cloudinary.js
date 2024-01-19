@@ -27,7 +27,6 @@ const deleteFileFromCloudinary = async (folderName, url) => {
     try {
         const publicId = url.split('/').pop().split('.')[0];
         if (!publicId) return null;
-        console.log('publicId', publicId);
         const response = await cloudinary.uploader.destroy(
             folderName + '/' + publicId
         );
