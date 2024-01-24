@@ -1,14 +1,14 @@
 import {asyncHandler} from '../utils/asyncHandler.js';
 import {Video} from '../models/video.model.js';
 import {ApiResponse} from '../utils/ApiResponse.js';
-import {
-    uploadFileOnCloudinary,
-    deleteFileFromCloudinary,
-} from '../utils/cloudinary.js';
 import {FOLDER} from '../constants.js';
 import {ApiError} from '../utils/ApiError.js';
 import {getVideoDurationInSeconds} from 'get-video-duration';
 import mongoose from 'mongoose';
+import {
+    uploadFileOnCloudinary,
+    deleteFileFromCloudinary,
+} from '../utils/cloudinary.js';
 
 const publishVideo = asyncHandler(async (req, res) => {
     const {title, description} = req.body;
@@ -64,6 +64,10 @@ const getVideoById = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Video id is required');
     }
 
+    if (mongoose.isValidObjectId(videoId) === false) {
+        throw new ApiError(400, 'Video id is not valid');
+    }
+
     // const video = await Video.findById(videoId);
 
     const video = await Video.aggregate([
@@ -114,6 +118,10 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
     if (!videoId) {
         throw new ApiError(400, 'Video id is required');
+    }
+
+    if (mongoose.isValidObjectId(videoId) === false) {
+        throw new ApiError(400, 'Video id is not valid');
     }
 
     const video = await Video.findById(videoId);
@@ -229,6 +237,10 @@ const updateVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Video id is required');
     }
 
+    if (mongoose.isValidObjectId(videoId) === false) {
+        throw new ApiError(400, 'Video id is not valid');
+    }
+
     const {title, description} = req.body;
     const thumbnailLocalPath = req.file?.path;
 
@@ -279,6 +291,10 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
     if (!videoId) {
         throw new ApiError(400, 'Video id is required');
+    }
+
+    if (mongoose.isValidObjectId(videoId) === false) {
+        throw new ApiError(400, 'Video id is not valid');
     }
 
     const video = await Video.findById(videoId);

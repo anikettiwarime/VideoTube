@@ -8,6 +8,14 @@ import {User} from '../models/user.model.js';
 const toggleSubscription = asyncHandler(async (req, res) => {
     const {channelId} = req.params;
 
+    if (!channelId) {
+        throw new ApiError(400, 'Channel id is required');
+    }
+
+    if (mongoose.isValidObjectId(channelId) === false) {
+        throw new ApiError(400, 'Channel id is not valid');
+    }
+
     const subscribtionOptions = {
         subscriber: req.user._id,
         channel: channelId,
@@ -58,6 +66,10 @@ const getChannelSubscribers = asyncHandler(async (req, res) => {
 
     if (!channelId) {
         throw new ApiError(400, 'Channel id is required');
+    }
+
+    if (mongoose.isValidObjectId(channelId) === false) {
+        throw new ApiError(400, 'Channel id is not valid');
     }
 
     const subscribers = await Subscription.aggregate([
@@ -112,6 +124,10 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
 
     if (!subscriberId) {
         throw new ApiError(400, 'Subscriber id is required');
+    }
+
+    if (mongoose.isValidObjectId(subscriberId) === false) {
+        throw new ApiError(400, 'Subscriber id is not valid');
     }
 
     const subscribedChannels = await Subscription.aggregate([

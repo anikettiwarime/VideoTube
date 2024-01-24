@@ -2,6 +2,7 @@ import {Tweet} from '../models/tweet.model.js';
 import {ApiError} from '../utils/ApiError.js';
 import {asyncHandler} from '../utils/asyncHandler.js';
 import {ApiResponse} from '../utils/ApiResponse.js';
+import mongoose from 'mongoose';
 
 const createTweet = asyncHandler(async (req, res) => {
     const {content} = req.body;
@@ -25,6 +26,10 @@ const getUserTweets = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'User ID is required');
     }
 
+    if (mongoose.isValidObjectId(userId) === false) {
+        throw new ApiError(400, 'User ID is not valid');
+    }
+
     const tweets = await Tweet.find({owner: userId});
 
     let data = {
@@ -42,6 +47,11 @@ const updateTweet = asyncHandler(async (req, res) => {
     if (!tweetId) {
         throw new ApiError(400, 'Tweet ID is required');
     }
+
+    if (mongoose.isValidObjectId(tweetId) === false) {
+        throw new ApiError(400, 'Tweet ID is not valid');
+    }
+
     const {content} = req.body;
     if (!content) {
         throw new ApiError(400, 'Content is required');
@@ -66,6 +76,10 @@ const deleteTweet = asyncHandler(async (req, res) => {
     const {tweetId} = req.params;
     if (!tweetId) {
         throw new ApiError(400, 'Tweet ID is required');
+    }
+
+    if (mongoose.isValidObjectId(tweetId) === false) {
+        throw new ApiError(400, 'Tweet ID is not valid');
     }
 
     const deletedTweet = await Tweet.findOneAndDelete({
