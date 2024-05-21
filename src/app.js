@@ -1,6 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import {ApiResponse} from './utils/ApiResponse.js';
 
 const app = express();
 
@@ -36,5 +37,15 @@ app.use('/api/v1/playlists', playlistRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/healthcheck', healthcheckRoutes);
 app.use('/api/v1/subscriptions', subscriptionRoutes);
+
+// Redirect from root to healthcheck route
+app.get('/', (req, res) => {
+    res.redirect(302, '/api/v1/healthcheck');
+});
+
+// 404 Route Handler
+app.use('*', (req, res) => {
+    res.status(404).json(new ApiResponse(404, null, 'Route not found'));
+});
 
 export {app};
