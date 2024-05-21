@@ -3,7 +3,6 @@ import {Video} from '../models/video.model.js';
 import {ApiResponse} from '../utils/ApiResponse.js';
 import {FOLDER} from '../constants.js';
 import {ApiError} from '../utils/ApiError.js';
-import {getVideoDurationInSeconds} from 'get-video-duration';
 import mongoose from 'mongoose';
 import {
     uploadFileOnCloudinary,
@@ -19,8 +18,6 @@ const publishVideo = asyncHandler(async (req, res) => {
     if (!videoFileLocalPath) {
         throw new ApiError(400, 'Video file is required');
     }
-
-    const videoDuration = await getVideoDurationInSeconds(videoFileLocalPath);
 
     if (!thumbnailLocalPath) {
         throw new ApiError(400, 'Thumbnail is required');
@@ -48,7 +45,7 @@ const publishVideo = asyncHandler(async (req, res) => {
         description,
         thumbnail: thumbnail.url,
         videoUrl: videoFile.url,
-        duration: videoDuration,
+        duration: 100,
         owner: req.user._id,
     });
 
